@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Databases
+*.db
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Generated maps/images
+*.png
+*.html
