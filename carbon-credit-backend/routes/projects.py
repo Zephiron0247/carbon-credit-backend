@@ -16,7 +16,6 @@ from web3.middleware import ExtraDataToPOAMiddleware
 
 from database import get_db
 from models import CreditLedger, FraudFlag, Project, Verification
-from pipeline import run_full_pipeline
 from schemas import ProjectResponse, ProjectStatus, ProjectSubmit, VerificationResponse
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -351,6 +350,14 @@ def verify_project(project_id: str, db: Session = Depends(get_db)):
     Stores verification result including confidence score, credits, image hashes.
     Flags for review if score is borderline (below pass_threshold + 5).
     """
+    try:
+        from pipeline import run_full_pipeline
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail="Live verification is disabled on this server (demo mode)."
+        )
+
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
