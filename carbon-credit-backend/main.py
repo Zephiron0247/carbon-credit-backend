@@ -12,6 +12,27 @@ app = FastAPI(
     version     = "1.0.0"
 )
 
+import os, threading, time, requests
+
+@app.get("/ping")
+def ping():
+    return {"pong": True}
+
+def _keep_alive():
+    url = os.getenv("RENDER_EXTERNAL_URL")
+    if not url:
+        return
+    while True:
+        time.sleep(600)
+        try:
+            requests.get(f"{url}/ping", timeout=10)
+        except Exception:
+            pass
+
+@app.on_event("startup")
+def _start_keep_alive():
+    threading.Thread(target=_keep_alive, daemon=True).start()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins     = [
